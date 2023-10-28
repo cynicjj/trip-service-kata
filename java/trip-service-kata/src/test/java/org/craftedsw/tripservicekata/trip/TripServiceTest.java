@@ -19,21 +19,17 @@ public class TripServiceTest {
 	private static final Trip TO_BRAZIL = new Trip();
 	private static final Trip TO_KOREA = new Trip();
 
-	private User loggedInUser;
 	private TripService tripService;
 
 	@BeforeEach
 	void init() {
 		tripService = new TestableTripService();
-		loggedInUser = REGISTERED_USER;
 	}
 
 	@Test
 	void 로그인_유저가_없으면_예외() {
-		loggedInUser = GUEST;
-
 		assertThrows(UserNotLoggedInException.class, () -> {
-			tripService.getTripsByUser(new User());
+			tripService.getTripsByUser(ANOTHER_USER, GUEST);
 		});
 	}
 
@@ -44,7 +40,7 @@ public class TripServiceTest {
 				.tripsWith(TO_BRAZIL)
 				.build();
 
-		List<Trip> trips = tripService.getTripsByUser(targetUser);
+		List<Trip> trips = tripService.getTripsByUser(targetUser, REGISTERED_USER);
 
 		assertTrue(trips.isEmpty());
 	}
@@ -52,22 +48,17 @@ public class TripServiceTest {
 	@Test
 	void 친구의_여행목록을_가져온다() {
 		User targetUser = UserBuilder.aUser()
-				.friendsWith(ANOTHER_USER, loggedInUser)
+				.friendsWith(ANOTHER_USER, REGISTERED_USER)
 				.tripsWith(TO_BRAZIL, TO_KOREA)
 				.build();
 
-		List<Trip> trips = tripService.getTripsByUser(targetUser);
+		List<Trip> trips = tripService.getTripsByUser(targetUser, REGISTERED_USER);
 
 		assertTrue(trips.size() == 2);
 
 	}
 
 	private class TestableTripService extends TripService {
-
-		@Override
-		protected User getLoggedInUser() {
-			return loggedInUser;
-		}
 
 		@Override
 		protected List<Trip> tripsBy(User user) {
