@@ -70,7 +70,7 @@ public class TripServiceTest {
 		}
 
 		@Override
-		protected List<Trip> tripsByUser(User user) {
+		protected List<Trip> tripsBy(User user) {
 			return user.trips();
 		}
 	}
