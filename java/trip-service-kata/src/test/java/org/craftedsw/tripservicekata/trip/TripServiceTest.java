@@ -9,7 +9,14 @@ import org.craftedsw.tripservicekata.exception.UserNotLoggedInException;
 import org.craftedsw.tripservicekata.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.BDDMockito.given;
 
+@ExtendWith(MockitoExtension.class)
 public class TripServiceTest {
 
 	private static final User GUEST = null;
@@ -19,13 +26,12 @@ public class TripServiceTest {
 	private static final Trip TO_BRAZIL = new Trip();
 	private static final Trip TO_KOREA = new Trip();
 
-	private TripService tripService;
-
-	@BeforeEach
-	void init() {
-		tripService = new TestableTripService();
-	}
-
+	@Mock
+	private TripDAO tripDAO = new TripDAO();
+	
+	@InjectMocks @Spy
+	private TripService tripService = new TripService();
+	
 	@Test
 	void 로그인_유저가_없으면_예외() {
 		assertThrows(UserNotLoggedInException.class, () -> {
@@ -39,7 +45,7 @@ public class TripServiceTest {
 				.friendsWith(ANOTHER_USER)
 				.tripsWith(TO_BRAZIL)
 				.build();
-
+		
 		List<Trip> trips = tripService.getTripsByUser(targetUser, REGISTERED_USER);
 
 		assertTrue(trips.isEmpty());
@@ -52,17 +58,11 @@ public class TripServiceTest {
 				.tripsWith(TO_BRAZIL, TO_KOREA)
 				.build();
 
-		List<Trip> trips = tripService.getTripsByUser(targetUser, REGISTERED_USER);
+		given(tripDAO.tripsBy(targetUser)).willReturn(targetUser.trips());
 
+		List<Trip> trips = tripService.getTripsByUser(targetUser, REGISTERED_USER);
+		
 		assertTrue(trips.size() == 2);
 
-	}
-
-	private class TestableTripService extends TripService {
-
-		@Override
-		protected List<Trip> tripsBy(User user) {
-			return user.trips();
-		}
 	}
 }
