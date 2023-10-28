@@ -20,6 +20,9 @@ public class TripService {
 					break;
 				}
 			}
+			
+			isFriend = user.isFriendWith(loggedUser);
+			
 			if (isFriend) {
 				tripList = tripsByUser(user);
 			}
