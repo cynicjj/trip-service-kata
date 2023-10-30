@@ -1,7 +1,12 @@
 package org.craftedsw.tripservicekata.trip;
 
-import org.craftedsw.tripservicekata.TripService_Original;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.List;
+
+import org.craftedsw.tripservicekata.exception.UserNotLoggedInException;
 import org.craftedsw.tripservicekata.user.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /*
@@ -17,25 +22,44 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 public class TripServiceTest {
 
+	private TestableTripService service;
+
+	private User loggedInUser;
+
 	private class TestableTripService extends TripService {
 
 		@Override
 		protected User getLoggedUser() {
-			// TODO
-			return null;
+			return loggedInUser;
 		}
 	}
-	
+
+	@BeforeEach
+	private void init() {
+		service = new TestableTripService();
+		loggedInUser = new User();
+	}
+
 //	@Test
 	void learn() {
 		TripService service = new TripService();
 		service.getTripsByUser(null);
 
 	}
-	
+
 	@Test
-	void learn2() {
-		TestableTripService service = new TestableTripService();
-		service.getTripsByUser(null);
+	void 로그인_유저_없으면_예외() {
+		loggedInUser = null;
+		
+		assertThrows(UserNotLoggedInException.class, () -> {
+			service.getTripsByUser(null);
+		});
+	}
+
+	@Test
+	void 친구_아니면_여행_목록_없음() {
+		loggedInUser = new User();
+
+		List<Trip> trips = service.getTripsByUser(new User());
 	}
 }
