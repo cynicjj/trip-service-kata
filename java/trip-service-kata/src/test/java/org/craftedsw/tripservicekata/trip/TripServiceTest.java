@@ -29,11 +29,6 @@ public class TripServiceTest {
 	private class TestableTripService extends TripService {
 
 		@Override
-		protected User getLoggedUser() {
-			return loggedInUser;
-		}
-
-		@Override
 		protected List<Trip> findTripByUser(User user) {
 			return user.trips();
 		}
@@ -45,25 +40,18 @@ public class TripServiceTest {
 		loggedInUser = new User();
 	}
 
-//	@Test
-	void learn() {
-		TripService service = new TripService();
-		service.getTripsByUser(null);
-
-	}
-
 	@Test
 	void 로그인_유저_없으면_예외() {
 		assertThrows(UserNotLoggedInException.class, () -> {
-			service.getTripsByUser(null);
+			service.getTripsByUser(null, null);
 		});
 	}
 
 	@Test
 	void 친구_아니면_여행_목록_없음() {
 		loggedInUser = new User();
-		
-		List<Trip> trips = service.getTripsByUser(new User());
+
+		List<Trip> trips = service.getTripsByUser(new User(), loggedInUser);
 
 		assertThat(trips.size(), is(0));
 	}
@@ -77,7 +65,7 @@ public class TripServiceTest {
 		friend.addTrip(new Trip());
 		friend.addTrip(new Trip());
 
-		List<Trip> trips = service.getTripsByUser(friend);
+		List<Trip> trips = service.getTripsByUser(friend, loggedInUser);
 
 		assertThat(trips.size(), is(2));
 	}
