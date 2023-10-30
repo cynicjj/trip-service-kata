@@ -9,9 +9,9 @@ import org.craftedsw.tripservicekata.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/*
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+/*
 
 import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
@@ -61,5 +61,21 @@ public class TripServiceTest {
 		loggedInUser = new User();
 
 		List<Trip> trips = service.getTripsByUser(new User());
+		
+		assertThat(trips.size(), is(0));
+	}
+	
+	@Test
+	void 친구_아니면_여행_목록_가져온다() {
+		loggedInUser = new User();
+		
+		User friend = new User();
+		friend.addFriend(loggedInUser);
+		friend.addTrip(new Trip());
+		friend.addTrip(new Trip());
+		
+		List<Trip> trips = service.getTripsByUser(friend);
+		
+		assertThat(trips.size(), is(2));
 	}
 }
