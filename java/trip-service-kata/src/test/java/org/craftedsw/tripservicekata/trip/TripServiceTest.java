@@ -32,6 +32,11 @@ public class TripServiceTest {
 		protected User getLoggedUser() {
 			return loggedInUser;
 		}
+
+		@Override
+		protected List<Trip> findTripByUser(User user) {
+			return user.trips();
+		}
 	}
 
 	@BeforeEach
@@ -50,7 +55,7 @@ public class TripServiceTest {
 	@Test
 	void 로그인_유저_없으면_예외() {
 		loggedInUser = null;
-		
+
 		assertThrows(UserNotLoggedInException.class, () -> {
 			service.getTripsByUser(null);
 		});
@@ -61,21 +66,21 @@ public class TripServiceTest {
 		loggedInUser = new User();
 
 		List<Trip> trips = service.getTripsByUser(new User());
-		
+
 		assertThat(trips.size(), is(0));
 	}
-	
+
 	@Test
-	void 친구_아니면_여행_목록_가져온다() {
+	void 친구면_여행_목록_가져온다() {
 		loggedInUser = new User();
-		
+
 		User friend = new User();
 		friend.addFriend(loggedInUser);
 		friend.addTrip(new Trip());
 		friend.addTrip(new Trip());
-		
+
 		List<Trip> trips = service.getTripsByUser(friend);
-		
+
 		assertThat(trips.size(), is(2));
 	}
 }
