@@ -14,23 +14,26 @@ public class TripService {
 
 		User loggedUser = getLoggedUser();
 
+		validateAndThrow(loggedUser);
+
 		boolean isFriend = false;
-		if (loggedUser != null) {
-			for (User friend : user.getFriends()) {
-				if (friend.equals(loggedUser)) {
-					isFriend = true;
-					break;
-				}
+		for (User friend : user.getFriends()) {
+			if (friend.equals(loggedUser)) {
+				isFriend = true;
+				break;
 			}
-
-			if (isFriend) {
-				tripList = findTripByUser(user);
-			}
-
-			return tripList;
-		} else {
-			throw new UserNotLoggedInException();
 		}
+
+		if (isFriend) {
+			tripList = findTripByUser(user);
+		}
+
+		return tripList;
+	}
+
+	private void validateAndThrow(User loggedUser) {
+		if (loggedUser == null)
+			throw new UserNotLoggedInException();
 	}
 
 	protected List<Trip> findTripByUser(User user) {

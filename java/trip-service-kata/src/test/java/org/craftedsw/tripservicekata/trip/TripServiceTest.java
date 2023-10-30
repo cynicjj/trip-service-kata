@@ -54,8 +54,6 @@ public class TripServiceTest {
 
 	@Test
 	void 로그인_유저_없으면_예외() {
-		loggedInUser = null;
-
 		assertThrows(UserNotLoggedInException.class, () -> {
 			service.getTripsByUser(null);
 		});
@@ -64,7 +62,7 @@ public class TripServiceTest {
 	@Test
 	void 친구_아니면_여행_목록_없음() {
 		loggedInUser = new User();
-
+		
 		List<Trip> trips = service.getTripsByUser(new User());
 
 		assertThat(trips.size(), is(0));
