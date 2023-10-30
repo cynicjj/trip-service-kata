@@ -1,5 +1,7 @@
 package org.craftedsw.tripservicekata.trip;
 
+import org.craftedsw.tripservicekata.TripService_Original;
+import org.craftedsw.tripservicekata.user.User;
 import org.junit.jupiter.api.Test;
 
 /*
@@ -15,9 +17,25 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 public class TripServiceTest {
 
-	@Test
+	private class TestableTripService extends TripService {
+
+		@Override
+		protected User getLoggedUser() {
+			// TODO
+			return null;
+		}
+	}
+	
+//	@Test
 	void learn() {
 		TripService service = new TripService();
+		service.getTripsByUser(null);
+
+	}
+	
+	@Test
+	void learn2() {
+		TestableTripService service = new TestableTripService();
 		service.getTripsByUser(null);
 	}
 }
