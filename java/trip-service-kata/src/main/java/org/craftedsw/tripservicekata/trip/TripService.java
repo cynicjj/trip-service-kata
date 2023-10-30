@@ -16,6 +16,8 @@ public class TripService {
 
 		validateAndThrow(loggedUser);
 
+//		boolean isFriend = user.isFriend(loggedUser);
+		
 		boolean isFriend = false;
 		for (User friend : user.getFriends()) {
 			if (friend.equals(loggedUser)) {
