@@ -1,68 +1,56 @@
 package org.craftedsw.tripservicekata.trip;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.security.Provider.Service;
 import java.util.List;
 
 import org.craftedsw.tripservicekata.exception.UserNotLoggedInException;
 import org.craftedsw.tripservicekata.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-
-/*
 import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-//*/
 
+@ExtendWith(MockitoExtension.class)
 public class TripServiceTest {
 
 	private User loggedInUser;
-	
-	private TestableTripService service;
-	
-	private class TestableTripService extends TripService {
-		@Override
-		protected User getLoggedUser() {
-			return loggedInUser;
-		}
 
-		@Override
-		protected List<Trip> findTripsByUser(User user) {
-			return user.trips();
-		}
-	}
+	@Mock
+	private TripDAO tripDAO = new TripDAO();
+
+	@InjectMocks
+	@Spy
+	private TripService service = new TripService();
 
 	@BeforeEach
 	void init() {
 		loggedInUser = new User();
-		service = new TestableTripService();
 	}
-	
+
 	@Test
 	void 로그인_유저_없으면_예외() {
-		loggedInUser = null;
-		
 		assertThrows(UserNotLoggedInException.class, () -> {
-			service.getTripsByUser(null);
+			service.getTripsByUser(null, null);
 		});
 	}
 
 	@Test
 	void 친구_아니면_여행_목록_없다() {
 		User notFriend = new User();
-		
-		List<Trip> trips = service.getTripsByUser(notFriend);
-		
+
+		List<Trip> trips = service.getTripsByUser(notFriend, loggedInUser);
+
 		assertThat(trips.size(), is(0));
 	}
-	
+
 	@Test
 	void 친구면_여행_목록_가져온다() {
 		User friend = new User();
@@ -70,9 +58,11 @@ public class TripServiceTest {
 		friend.addTrip(new Trip());
 
 		friend.addFriend(loggedInUser);
-		
-		List<Trip> trips = service.getTripsByUser(friend);
-		
+
+		given(tripDAO.tripsByUser(friend)).willReturn(friend.trips());
+
+		List<Trip> trips = service.getTripsByUser(friend, loggedInUser);
+
 		assertThat(trips.size(), is(2));
 	}
 }
