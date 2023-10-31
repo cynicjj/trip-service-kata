@@ -32,6 +32,11 @@ public class TripServiceTest {
 		protected User getLoggedUser() {
 			return loggedInUser;
 		}
+
+		@Override
+		protected List<Trip> findTripsByUser(User user) {
+			return user.trips();
+		}
 	}
 
 	@BeforeEach
@@ -56,5 +61,18 @@ public class TripServiceTest {
 		List<Trip> trips = service.getTripsByUser(notFriend);
 		
 		assertThat(trips.size(), is(0));
+	}
+	
+	@Test
+	void 친구면_여행_목록_가져온다() {
+		User friend = new User();
+		friend.addTrip(new Trip());
+		friend.addTrip(new Trip());
+
+		friend.addFriend(loggedInUser);
+		
+		List<Trip> trips = service.getTripsByUser(friend);
+		
+		assertThat(trips.size(), is(2));
 	}
 }
