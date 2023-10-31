@@ -21,6 +21,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class TripServiceTest {
 
+	private static final User JOHN = new User();
+	private static final User SMITH = new User();
+
+	private static final Trip KOREA = new Trip();
+	private static final Trip USA = new Trip();
+
 	private User loggedInUser;
 
 	@Mock
@@ -53,9 +59,7 @@ public class TripServiceTest {
 
 	@Test
 	void 친구면_여행_목록_가져온다() {
-		User friend = new User();
-		friend.addTrip(new Trip());
-		friend.addTrip(new Trip());
+		User friend = UserBuilder.anUser().friends(JOHN, SMITH).trips(KOREA, USA).build();
 
 		friend.addFriend(loggedInUser);
 
