@@ -2,14 +2,18 @@ package org.craftedsw.tripservicekata.trip;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.security.Provider.Service;
+import java.util.List;
+
 import org.craftedsw.tripservicekata.exception.UserNotLoggedInException;
 import org.craftedsw.tripservicekata.user.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/*
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
+/*
 import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -19,25 +23,27 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 public class TripServiceTest {
 
+	private User loggedInUser;
+	
+	private TestableTripService service;
+	
 	private class TestableTripService extends TripService {
-//		service = new TestableTripService();
 		@Override
 		protected User getLoggedUser() {
-			// TODO Auto-generated method stub
-			return null;
+			return loggedInUser;
 		}
 	}
 
-//	@Test
-	void learn() {
-		TripService service = new TripService();
-		service.getTripsByUser(null);
+	@BeforeEach
+	void init() {
+		loggedInUser = new User();
+		service = new TestableTripService();
 	}
-
+	
 	@Test
 	void 로그인_유저_없으면_예외() {
-		TripService service = new TestableTripService();
-
+		loggedInUser = null;
+		
 		assertThrows(UserNotLoggedInException.class, () -> {
 			service.getTripsByUser(null);
 		});
@@ -45,6 +51,10 @@ public class TripServiceTest {
 
 	@Test
 	void 친구_아니면_여행_목록_없다() {
-
+		User notFriend = new User();
+		
+		List<Trip> trips = service.getTripsByUser(notFriend);
+		
+		assertThat(trips.size(), is(0));
 	}
 }
